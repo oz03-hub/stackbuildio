@@ -1,0 +1,61 @@
+body {
+    background-color: #222;
+    margin: 0;
+    padding: 0;
+    color: #eee;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#topBanner {
+    background-color: darkslategray;
+    padding: 20px;
+    text-align: center;
+    color: #222;
+}
+
+.header0 {
+    color: aquamarine;
+}
+
+.form-container {
+    margin: 20px;
+    flex-direction: column;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label, textarea, input, button {
+    margin-bottom: 10px;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+input {
+    background-color: #444;
+    color: #eee;
+}
+
+#appName {
+    width: 30ch;
+}
+
+textarea {
+    color: #eee;
+    background-color: #444;
+    resize: vertical;
+}
+
+#infoContainer {
+    margin: 20px;
+    text-align: center;
+}
+
+p {
+    line-height: 1.6;
+}

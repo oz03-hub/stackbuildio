@@ -1,0 +1,15 @@
+{
+  "name": "stackbuildio",
+  "version": "1.0.0",
+  "description": "stack builder web application with AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ozel Yilmazel",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
+}
