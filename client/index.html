@@ -1,35 +1,64 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8"/>
-        <link rel="stylesheet" href="style.css" />
-        <script type="module" src="client.js"></script>
-        <title>Stack Builder IO</title>
-    </head>
-    <body>
-        <div id="topBanner">
-            <h1 class="header0">Welcome to Stack Builder IO</h1>
-            <h2>Unlock Your Full Potential with Personalized Tech Stack Guidance</p>
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="client.js"></script>
+    <title>Stack Builder IO</title>
+</head>
+<body>
+    <div id="topBanner" class="banner">
+        <h1 class="header0">Welcome to Stack Builder IO</h1>
+        <h2>Unlock Your Full Potential with Personalized Tech Stack Guidance</h2>
+    </div>
+    <div id="infoContainer" class="container">
+        <p>
+            Welcome to Stack Builder IO! 🚀<br>
+            Plan out your dream application stack in minutes with our AI-powered assistance.<br>
+            Just provide your application name and describe what you want, such as Realtime UI updates, DB integrations, APIs, and more.<br>
+            You can also explore stacks generated for other applications and find inspiration for your own project. Let's build something amazing together! 💡
+        </p>
+    </div>
+    <div class="form-container container">
+        <form>
+            <label for="appName">Application Name:</label>
+            <input type="text" id="appName" placeholder="Enter your application name...">
+            <label for="appDescription">Description:</label>
+            <textarea id="appDescription" rows="5" placeholder="Describe us your application..."></textarea>
+        </form>
+        <div class="buttons-container">
+            <button type="submit">Generate Stack Plan</button>
+            <button type="reset">Reset</button>    
         </div>
-        <div id="infoContainer">
-            <p>
-                Welcome to Stack Builder IO! 🚀<br>
-                Plan out your dream application stack in minutes with our AI-powered assistance.<br>
-                Just provide your application name and describe what you want, such as Realtime UI updates, DB integrations, APIs, and more.<br>
-                You can also explore stacks generated for other applications and find inspiration for your own project. Let's build something amazing together! 💡
-            </p>
-        </div>
-        <div class="form-container">
-            <form>
-                <label for="appName">Application Name:</label>
-                <input type="text" id="appName" placeholder="Enter your application name...">
-                <label for="appDescription">Description:</label>
-                <textarea id="appDescription" rows="5" placeholder="Describe us your application..."></textarea>
-            </form>
-            <div class="buttons-container">
-                <button type="submit">Generate Stack Plan</button>
-                <button type="reset">Reset</button>    
-            </div>
-        </div>
-    </body>
+    </div>
+    <div class="listContainer container">
+        <div class="banner">Your suggestions will show up here...</div>
+        <ul>
+            <li>
+                <h2>Node.js</h2>
+                <p>Node.js is powerful for constructing full web apps.</p>
+            </li>
+            <li>
+                <h2>firebase</h2>
+                <p>More powerful dbs</p>
+            </li>
+            <li>
+                <h2>docker</h2>
+                <p>serve everything easier</p>
+            </li>
+        </ul>
+    </div>
+    <div class="listContainer container">
+        <div class="banner">See what others are developing!</div>
+        <ul>
+            <li>Example1</li>
+            <li>Example2</li>
+            <li>Example3</li>
+        </ul>
+    </div>
+    <footer>
+        <p>Feedbacks are welcome, <a href="mailto:ozel@yilmazel.com">email us</a>!</p>
+        <p>&copy; 2023 Ozel Yilmazel. All rights reserved.</p>
+    </footer>
+</body>
 </html>
