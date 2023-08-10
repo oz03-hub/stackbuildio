@@ -27,28 +27,15 @@
             <textarea id="appDescription" rows="5" placeholder="Describe us your application..."></textarea>
         </form>
         <div class="buttons-container">
-            <button type="submit">Generate Stack Plan</button>
-            <button type="reset">Reset</button>    
+            <button type="submit" id="submitButton">Generate Stack Plan</button>
+            <button type="reset" id="resetButton">Reset</button>    
         </div>
     </div>
     <div class="listContainer container">
-        <div class="banner">Your suggestions will show up here...</div>
-        <ul>
-            <li>
-                <h2>Node.js</h2>
-                <p>Node.js is powerful for constructing full web apps.</p>
-            </li>
-            <li>
-                <h2>firebase</h2>
-                <p>More powerful dbs</p>
-            </li>
-            <li>
-                <h2>docker</h2>
-                <p>serve everything easier</p>
-            </li>
-        </ul>
+        <div class="banner" id="loader">Your suggestions will show up here...</div>
+        <div class="container" id="toolsContainer"></div>
     </div>
-    <div class="listContainer container">
+    <div class="listContainer container" id="examplesContainer">
         <div class="banner">See what others are developing!</div>
         <ul>
             <li>Example1</li>
