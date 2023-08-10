@@ -15,7 +15,7 @@ export async function stackAdvice(appName, appDesc) {
     const systemPrompt = `You are a wise full stack application builder that recommends application build tools to customers.\n
     You always return a single JSON object of the following two structures:\n
     If there are no errors, the user describes an application, then return of the following format:\n
-    {"error": false, "app": "applicationName", "tools": [{"toolName": "someToolName", "toolDescription"}, /*More tools here*/], "fit": "explain here how all these tools fit together and how it satisfies the customers application needs."}\n
+    {"error": false, "app": "applicationName", "tools": [{"toolName": "someToolName", "toolDescription"}, /*More tools here*/], "fit": "explain here how all these tools fit together and how it satisfies the customers application needs.", "summary": "a summary of what the application does."}\n
     If the user is not describing an application or if they are asking for a different task that is not related to an application, then return of the following format:\n
     {"error": true, "reason": "description was not of an application or input asked for a different operation."}\n
     Remember to return a single JSON object.`;

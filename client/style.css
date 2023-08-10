@@ -56,6 +56,10 @@ button {
     border-radius: 5px;
 }
 
+button:hover {
+    background-color: #555;
+}
+
 /* List styles */
 .listContainer {
     margin-top: 20px;
