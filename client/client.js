@@ -9,9 +9,18 @@ const resetButton = document.getElementById("resetButton");
 const toolsContainer = document.getElementById("toolsContainer");
 const loadField = document.getElementById("loader");
 
-let userTools = null;
+const appsContainer = document.getElementById("appsContainer");
 
-function render() {
+let userTools = null;
+let allApps = null;
+
+document.getElementById("readButton").addEventListener('click', async (e) => {
+    const p = document.getElementById("testPar");
+    const d = await crud.readAllApps();
+    p.textContent = JSON.stringify(d);
+});
+
+async function render() {
     appNameField.value = localStorage.getItem('appNameField') || '';
     appDescField.value = localStorage.getItem('appDescField') || '';
     userTools = JSON.parse(localStorage.getItem('userTools')) || null;
@@ -19,16 +28,40 @@ function render() {
     if (userTools !== null) {
         renderToolContainer(userTools, toolsContainer);
     }
+
+    allApps = await crud.readAllApps();
+    renderAppsListing(allApps);
+}
+
+function renderAppsListing(apps) {
+    appsContainer.innerHTML = '';
+    const appListing = document.createElement('ul');
+    for (const app of apps) {
+        const appItem = document.createElement("li");
+        const h2 = document.createElement("h2");
+        h2.textContent = app["appName"];
+        const summary = document.createElement("p");
+        summary.textContent = app["appSummary"];
+        const author = document.createElement("p");
+        author.textContent = ` - ${app["appAuthor"]}`;
+        author.style.fontSize = '12px';
+        appItem.appendChild(h2);
+        appItem.appendChild(summary);
+        appItem.appendChild(author);
+        appListing.appendChild(appItem);
+    }
+    appsContainer.appendChild(appListing);
 }
 
 resetButton.addEventListener('click', async (e) => {
     toolsContainer.innerHTML = '';
     loadField.textContent = 'Your suggestions will show up here...';
     localStorage.clear();
-    render();
+    await render();
 });
 
 function renderToolContainer(data, parentElement) {
+    toolsContainer.innerHTML = '';
     const toolsList = document.createElement('ul');
     const tools = data["tools"];
     for (const tool of tools) {
@@ -72,6 +105,24 @@ function renderToolContainer(data, parentElement) {
 
     const addButton = document.createElement('button');
     addButton.textContent = "Share your project!";
+
+    addButton.addEventListener('click', async (e) => {
+        if (nameInput.value.trim() === '') {
+            alert('Please input your name for our records');
+            return;
+        }
+
+        const author = nameInput.value;
+        const body = {
+            appName: appNameField.value,
+            appDesc: appDescField.value,
+            appSummary: data["summary"],
+            appAuthor: author
+        };
+        await crud.shareApp(body);
+        await render();
+    });
+
     parentElement.appendChild(addButton);
 
     const disclaimer = document.createElement('p');
@@ -110,4 +161,4 @@ submitButton.addEventListener('click', async (e) => {
     }
 });
 
-render();
+await render();

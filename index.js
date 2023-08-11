@@ -1,27 +1,83 @@
 import express from 'express';
 import logger from 'morgan';
+import Logger from 'js-logger';
+import { StacksDatabase } from './mongo-module.js';
+import dotenv from 'dotenv'
 import * as ai from './ai-module.js';
 
-const app = express();
-const port = 3000;
+dotenv.config();
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use('/client', express.static('client'));
+class StackBuilderServer {
+    constructor(dburl) {
+        this.dburl = dburl;
+        this.app = express();
+    }
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello, check out usage: /help</h1>');
-});
+    async initDB() {
+        this.db = new StacksDatabase(this.dburl);
+        Logger.info("Connecting to DB...");
+        await this.db.connect();
+    }
 
-app.get('/build/:appName/:description', async (req, res) => {
-    res.send(await ai.stackAdvice(req.params.appName, req.params.description));
-});
+    async start() {
+        this.app.use(logger('dev'));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
+        this.app.use('/client', express.static('client'));
+        const port = 3000;
+        this.app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+            console.log(`Client on http://localhost:${port}/client/`);
+        });
+        Logger.info("Server start-up");
+        await this.initDB();
+        await this.initRoutes();
+    }
 
-app.get('*', (req, res) => {
-    res.status(404).json({ request: req.path, message: 'Unknown request'});
-});
+    async initRoutes() {
+        const self = this;
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+        this.app.get('/', (req, res) => {
+            res.send('<h1>Hello, check out: /client/ </h1>');
+        });
+        
+        this.app.get('/build/:appName/:description', async (req, res) => {
+            Logger.info("Request to stack advice");
+            res.send(await ai.stackAdvice(req.params.appName, req.params.description));
+        });
+        
+        this.app.post('/create', async (req, res) => {
+            const data = req.body;
+            Logger.info(`Creating app: ${JSON.stringify(data)}`);
+            const result = await self.db.insertApp(data);
+            res.json({ message: `Created: ${data["appName"]}`});
+        });
+
+        this.app.get('/read/all', async (req, res) => {
+            Logger.info("Reading all DB");
+            const result = await self.db.readAllApps();
+            res.json(result);
+        });
+
+        this.app.get('/read/:id', async (req, res) => {
+            const id = req.params.id;
+            Logger.info(`Reading app with id: ${id}`);
+            const result = await self.db.readApp(id);
+            res.json(result);
+        });
+
+        this.app.delete('/delete/:id', async (req, res) => {
+            Logger.info(`Deleting ${req.params.id}`);
+            const result = await self.db.deleteApp(req.params.id);
+            res.json(result);
+        });
+
+        this.app.get('*', (req, res) => {
+            res.status(404).json({ request: req.path, message: 'Unknown request'});
+        });    
+    }
+}
+
+Logger.info(process.env.DB_URL);
+const server = new StackBuilderServer(process.env.DB_URL);
+await server.start();

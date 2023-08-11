@@ -1,5 +1,6 @@
 import { OpenAIApi, Configuration } from "openai";
 import dotenv from 'dotenv';
+import Logger from "js-logger";
 
 dotenv.config();
 
@@ -23,10 +24,12 @@ export async function stackAdvice(appName, appDesc) {
     const prompt = `APP NAME: ${appName}\n
     APP DESCRIPTION: ${appDesc}`;
 
+    Logger.info("Sending completion...");
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [{"role": "system", "content": systemPrompt}, {"role": "user", "content": prompt}]
     });
+    Logger.info("Received completion");
 
     return JSON.parse(completion.data.choices[0].message["content"]);
 }
