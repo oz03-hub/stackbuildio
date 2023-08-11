@@ -14,12 +14,6 @@ const appsContainer = document.getElementById("appsContainer");
 let userTools = null;
 let allApps = null;
 
-document.getElementById("readButton").addEventListener('click', async (e) => {
-    const p = document.getElementById("testPar");
-    const d = await crud.readAllApps();
-    p.textContent = JSON.stringify(d);
-});
-
 async function render() {
     appNameField.value = localStorage.getItem('appNameField') || '';
     appDescField.value = localStorage.getItem('appDescField') || '';
@@ -38,6 +32,7 @@ function renderAppsListing(apps) {
     const appListing = document.createElement('ul');
     for (const app of apps) {
         const appItem = document.createElement("li");
+        appItem.setAttribute('class', 'appItem');
         const h2 = document.createElement("h2");
         h2.textContent = app["appName"];
         const summary = document.createElement("p");
@@ -48,6 +43,23 @@ function renderAppsListing(apps) {
         appItem.appendChild(h2);
         appItem.appendChild(summary);
         appItem.appendChild(author);
+
+        appItem.addEventListener('click', (e) => {
+            appNameField.value = app["appName"];
+            appDescField.value = app["appDesc"];
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.style.background = 'darkred';
+        deleteButton.textContent = 'Delete';
+
+        deleteButton.addEventListener('click', async (e) => {
+            await crud.deleteAppById(app["_id"]);
+            await render();
+        });
+
+        appItem.appendChild(deleteButton);
+
         appListing.appendChild(appItem);
     }
     appsContainer.appendChild(appListing);

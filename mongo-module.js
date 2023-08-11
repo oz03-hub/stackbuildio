@@ -1,4 +1,4 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import Logger from "js-logger";
 
 Logger.useDefaults();
@@ -32,7 +32,7 @@ export class StacksDatabase {
     }
 
     async readApp(id) {
-        const res = await this.collection.findOne({_id: id});
+        const res = await this.collection.findOne({_id: new ObjectId(id)});
         Logger.info(`Read app ${id}: ${JSON.stringify(res)}`);
         return res;
     }
@@ -44,7 +44,7 @@ export class StacksDatabase {
     }
 
     async deleteApp(id) {
-        const res = await this.collection.deleteOne({_id: id});
+        const res = await this.collection.deleteOne({_id: new ObjectId(id)});
         Logger.info(`Deleted app ${JSON.stringify(res)}`);
         return res;
     }
