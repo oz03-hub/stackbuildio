@@ -84,6 +84,14 @@ class StackBuilderServer {
             res.json(result);
         });
 
+        this.app.put('/update', async (req, res) => {
+            const data = req.body;
+            data["ownerId"] = req.cookies.uniqueid;
+            Logger.info(`Updating app: ${JSON.stringify(data)}`);
+            const result = await self.db.updateApp(data);
+            res.json({message: `Updated: ${data["appName"]}`});
+        });
+
         this.app.delete('/delete/:id', async (req, res) => {
             Logger.info(`Deleting ${req.params.id}`);
             const result = await self.db.deleteApp(req.params.id);

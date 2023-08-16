@@ -219,6 +219,25 @@ function createShareStaging(data, parentElement) {
     parentElement.appendChild(disclaimer);
 }
 
+function createUpdateStaging(data, parentElement) {
+    const h3 = document.createElement('h3');
+    h3.textContent = 'Got any updates? Push your updates to our server!';
+    const updateButton = document.createElement('button');
+    updateButton.textContent = "Update!";
+    updateButton.style.backgroundColor = "cornflowerblue";
+    updateButton.addEventListener('click', async (e) => {
+        const res = await crud.updateApp(data);
+        await render();
+    });
+    const disclaimer = document.createElement('p');
+    disclaimer.style.fontSize = '12px';
+    disclaimer.style.color = 'red';
+    disclaimer.textContent = "By sharing your project, you agree to relinquish copyright claims on your application. Ozel Yilmazel holds no legal responsibility for the security of your application.";
+    parentElement.appendChild(h3);
+    parentElement.appendChild(updateButton);
+    parentElement.appendChild(disclaimer);
+}
+
 function renderToolContainer(data, parentElement) {
     toolsContainer.innerHTML = '';
     const toolsList = document.createElement('ul');
@@ -237,8 +256,17 @@ function renderToolContainer(data, parentElement) {
     parentElement.appendChild(fitText);
     parentElement.appendChild(p);
 
-    if (myApp["isMyApp"]) {
+    if (myApp["_id"] === undefined) {
         createShareStaging(data, parentElement);
+    } else if (myApp["isMyApp"]) {
+        const myObj = {
+            _id: myApp["_id"],
+            appName: myApp["appName"],
+            appDesc: myApp["appDesc"],
+            appSummary: data["summary"],
+        };
+
+        createUpdateStaging(myObj, parentElement);
     }
 }
 

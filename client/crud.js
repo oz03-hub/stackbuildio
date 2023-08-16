@@ -21,6 +21,17 @@ export async function getAppById(id) {
     return await response.json();
 }
 
+export async function updateApp(body) {
+    const response = await fetch("/update", {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+    return await response.json();
+}
+
 export async function deleteAppById(id) {
     const response = await fetch(`/delete/${id}`, {
         method: 'DELETE',

@@ -37,6 +37,17 @@ export class StacksDatabase {
         return res;
     }
 
+    async updateApp(data) {
+        const res = await this.collection.updateOne({_id: new ObjectId(data["_id"])}, { $set: {
+            appName: data["appName"],
+            appDesc: data["appDesc"],
+            appSummary: data["appSummary"],
+            ownerId: data["ownerId"]
+        }});
+        Logger.info(`Update app ${data["_id"]}: ${JSON.stringify(res)}`);
+        return res;
+    }
+
     async insertApp(appData) {
         const res = await this.collection.insertOne(appData);
         Logger.info(`Insert new app ${JSON.stringify(res)}`);
