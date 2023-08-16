@@ -4,6 +4,8 @@ import Logger from 'js-logger';
 import { StacksDatabase } from './mongo-module.js';
 import dotenv from 'dotenv'
 import * as ai from './ai-module.js';
+import cookieParser from 'cookie-parser';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -24,6 +26,14 @@ class StackBuilderServer {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use('/client', express.static('client'));
+        this.app.use(cookieParser());
+        this.app.use((req, res, next) => {
+            if (!req.cookies.uniqueid) {
+                const uniqueid = uuidv4();
+                res.cookie('uniqueid', uniqueid, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true});
+            }
+            next();
+        });
         const port = 3000;
         this.app.listen(port, () => {
             console.log(`Server is running on http://localhost:${port}`);
@@ -40,6 +50,10 @@ class StackBuilderServer {
         this.app.get('/', (req, res) => {
             res.send('<h1>Hello, check out: /client/ </h1>');
         });
+
+        this.app.get('/uniqueid', (req, res) => {
+            res.send(`All cookies: ${JSON.stringify(req.cookies)}\nYour unique ID: ${req.cookies.uniqueid}`);
+        });
         
         this.app.get('/build/:appName/:description', async (req, res) => {
             Logger.info("Request to stack advice");
@@ -48,6 +62,7 @@ class StackBuilderServer {
         
         this.app.post('/create', async (req, res) => {
             const data = req.body;
+            data["ownerId"] = req.cookies.uniqueid;
             Logger.info(`Creating app: ${JSON.stringify(data)}`);
             const result = await self.db.insertApp(data);
             res.json({ message: `Created: ${data["appName"]}`});
@@ -56,7 +71,10 @@ class StackBuilderServer {
         this.app.get('/read/all', async (req, res) => {
             Logger.info("Reading all DB");
             const result = await self.db.readAllApps();
-            res.json(result);
+            res.json(result.map(e => {
+                e["owner"] = e["ownerId"] === req.cookies.uniqueid;
+                return e;
+            }));
         });
 
         this.app.get('/read/:id', async (req, res) => {

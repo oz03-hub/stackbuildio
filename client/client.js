@@ -14,6 +14,12 @@ const appsContainer = document.getElementById("appsContainer");
 let userTools = null;
 let allApps = null;
 
+let myApp = {
+    appName: "",
+    appDesc: "",
+    isMyApp: true,
+}
+
 async function render() {
     appNameField.value = localStorage.getItem('appNameField') || '';
     appDescField.value = localStorage.getItem('appDescField') || '';
@@ -47,18 +53,26 @@ function renderAppsListing(apps) {
         appItem.addEventListener('click', (e) => {
             appNameField.value = app["appName"];
             appDescField.value = app["appDesc"];
+            myApp = {
+                appName: appNameField.value,
+                appDesc: appDescField.value,
+                isMyApp: false,
+                _id: app["_id"]
+            };
         });
 
-        const deleteButton = document.createElement('button');
-        deleteButton.style.background = 'darkred';
-        deleteButton.textContent = 'Delete';
-
-        deleteButton.addEventListener('click', async (e) => {
-            await crud.deleteAppById(app["_id"]);
-            await render();
-        });
-
-        appItem.appendChild(deleteButton);
+        if (app["owner"]) {
+            const deleteButton = document.createElement('button');
+            deleteButton.style.background = 'darkred';
+            deleteButton.textContent = 'Delete';
+    
+            deleteButton.addEventListener('click', async (e) => {
+                await crud.deleteAppById(app["_id"]);
+                await render();
+            });
+    
+            appItem.appendChild(deleteButton);    
+        }
 
         appListing.appendChild(appItem);
     }
@@ -69,6 +83,11 @@ resetButton.addEventListener('click', async (e) => {
     toolsContainer.innerHTML = '';
     loadField.textContent = 'Your suggestions will show up here...';
     localStorage.clear();
+    myApp = {
+        appName: "",
+        appDesc: "",
+        isMyApp: true,
+    };
     await render();
 });
 
@@ -99,55 +118,60 @@ function renderToolContainer(data, parentElement) {
     parentElement.appendChild(fitText);
     parentElement.appendChild(p);
 
-    const h3 = document.createElement('h3');
-    h3.textContent = "Would you like to share this idea with others?";
+    if (myApp["isMyApp"]) {
+        const h3 = document.createElement('h3');
+        h3.textContent = "Would you like to share this idea with others?";
 
-    const nameLabel = document.createElement('label');
-    nameLabel.textContent = "Developer name: ";
-    nameLabel.setAttribute('for', 'nameInput');
+        const nameLabel = document.createElement('label');
+        nameLabel.textContent = "Developer name: ";
+        nameLabel.setAttribute('for', 'nameInput');
 
-    const nameInput = document.createElement('input');
-    nameInput.setAttribute('type', 'text');
-    nameInput.setAttribute('id', 'nameInput');
-    nameInput.setAttribute('placeholder', 'Enter your name');
+        const nameInput = document.createElement('input');
+        nameInput.setAttribute('type', 'text');
+        nameInput.setAttribute('id', 'nameInput');
+        nameInput.setAttribute('placeholder', 'Enter your name');
 
-    parentElement.appendChild(h3);
-    parentElement.appendChild(nameLabel);
-    parentElement.appendChild(nameInput);
+        parentElement.appendChild(h3);
+        parentElement.appendChild(nameLabel);
+        parentElement.appendChild(nameInput);
 
-    const addButton = document.createElement('button');
-    addButton.textContent = "Share your project!";
+        const addButton = document.createElement('button');
+        addButton.textContent = "Share your project!";
 
-    addButton.addEventListener('click', async (e) => {
-        if (nameInput.value.trim() === '') {
-            alert('Please input your name for our records');
-            return;
-        }
+        addButton.addEventListener('click', async (e) => {
+            if (nameInput.value.trim() === '') {
+                alert('Please input your name for our records');
+                return;
+            }
 
-        const author = nameInput.value;
-        const body = {
-            appName: appNameField.value,
-            appDesc: appDescField.value,
-            appSummary: data["summary"],
-            appAuthor: author
-        };
-        await crud.shareApp(body);
-        await render();
-    });
+            const author = nameInput.value;
+            const body = {
+                appName: appNameField.value,
+                appDesc: appDescField.value,
+                appSummary: data["summary"],
+                appAuthor: author
+            };
+            await crud.shareApp(body);
+            await render();
+        });
 
-    parentElement.appendChild(addButton);
+        parentElement.appendChild(addButton);
 
-    const disclaimer = document.createElement('p');
-    disclaimer.style.fontSize = '12px';
-    disclaimer.style.color = 'red';
-    disclaimer.textContent = "By sharing your project, you agree to relinquish copyright claims on your application. Ozel Yilmazel holds no legal responsibility for the security of your application.";
-    parentElement.appendChild(disclaimer);
+        const disclaimer = document.createElement('p');
+        disclaimer.style.fontSize = '12px';
+        disclaimer.style.color = 'red';
+        disclaimer.textContent = "By sharing your project, you agree to relinquish copyright claims on your application. Ozel Yilmazel holds no legal responsibility for the security of your application.";
+        parentElement.appendChild(disclaimer);
+    }
 }
 
 submitButton.addEventListener('click', async (e) => {
     toolsContainer.innerHTML = '';
     const name = appNameField.value.trim();
     const desc = appDescField.value.trim();
+    myApp["appName"] = name;
+    myApp["appDesc"] = desc;
+
     if (name === "") {
         alert("Please specify an Application name.");
         return;
