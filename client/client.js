@@ -9,13 +9,15 @@ const loadField = document.getElementById("loader");
 const appsContainer = document.getElementById("appsContainer");
 
 // Data
-let userTools = null;
-let allApps = null;
-let myApp = {
-    appName: "",
-    appDesc: "",
-    isMyApp: true,
-};
+// let userTools = null;
+// let allApps = null;
+// let myApp = {
+//     appName: "",
+//     appDesc: "",
+//     isMyApp: true,
+// };
+
+let myState = undefined;
 
 // Event Listeners
 resetButton.addEventListener('click', handleResetButtonClick);
@@ -24,25 +26,42 @@ submitButton.addEventListener('click', handleSubmitButtonClick);
 // Functions
 async function render() {
     loadLocalStorageData();
-    renderUserTools();
+
+    appNameField.value = myState["myApp"]["appName"];
+    appDescField.value = myState["myApp"]["appDesc"];
+
+    // renderUserTools();
     await renderAllApps();
 }
 
-function loadLocalStorageData() {
-    appNameField.value = localStorage.getItem('appNameField') || '';
-    appDescField.value = localStorage.getItem('appDescField') || '';
-    userTools = JSON.parse(localStorage.getItem('userTools')) || null;
+function saveLocalStorage() {
+    localStorage.setItem('myState', JSON.stringify(myState));
 }
 
-function renderUserTools() {
-    if (userTools !== null) {
-        renderToolContainer(userTools, toolsContainer);
-    }
+function loadLocalStorageData() {
+    myState = JSON.parse(localStorage.getItem('myState')) || {
+        myApp: {
+            appName: "",
+            appDesc: "",
+            isMyApp: true,
+            _id: -1
+        },
+        tools: null,
+        allApps: null
+    };
+
+    console.log(JSON.stringify(myState));
 }
+
+// function renderUserTools() {
+//     if (myState && myState["tools"] !== null) {
+//         renderToolContainer(myState["tools"], toolsContainer);
+//     }
+// }
 
 async function renderAllApps() {
-    allApps = await crud.readAllApps();
-    renderAppsListing(allApps);
+    myState["allApps"] = await crud.readAllApps();
+    renderAppsListing(myState["allApps"]);
 }
 
 function renderAppsListing(apps) {
@@ -100,14 +119,18 @@ function createDeleteButton(appId) {
 async function handleAppItemClick(app) {
     await handleResetButtonClick();
 
-    appNameField.value = app["appName"];
-    appDescField.value = app["appDesc"];
-    myApp = {
-        appName: appNameField.value,
-        appDesc: appDescField.value,
-        isMyApp: app["owner"],
-        _id: app["_id"]
+    myState = {
+        myApp: {
+            appName: app["appName"],
+            appDesc: app["appDesc"],
+            isMyApp: app["owner"],
+            _id: app["_id"]
+        },
+        tools: null,
+        allApps: myState["allApps"]
     };
+    saveLocalStorage();
+    await render();
 }
 
 async function handleDeleteButtonClick(appId) {
@@ -119,11 +142,6 @@ async function handleResetButtonClick() {
     toolsContainer.innerHTML = '';
     loadField.textContent = 'Your suggestions will show up here...';
     localStorage.clear();
-    myApp = {
-        appName: "",
-        appDesc: "",
-        isMyApp: true,
-    };
     await render();
 }
 
@@ -131,8 +149,8 @@ async function handleSubmitButtonClick() {
     toolsContainer.innerHTML = '';
     const name = appNameField.value.trim();
     const desc = appDescField.value.trim();
-    myApp["appName"] = name;
-    myApp["appDesc"] = desc;
+    myState["myApp"]["appName"] = name;
+    myState["myApp"]["appDesc"] = desc;
 
     if (name === "") {
         alert("Please specify an Application name.");
@@ -144,8 +162,7 @@ async function handleSubmitButtonClick() {
         return;
     }
 
-    localStorage.setItem('appNameField', name);
-    localStorage.setItem('appDescField', desc);
+    localStorage.setItem('myState', JSON.stringify(myState));
 
     loadField.textContent = "Loading...";
     const data = await crud.buildApp(name, desc);
@@ -256,13 +273,13 @@ function renderToolContainer(data, parentElement) {
     parentElement.appendChild(fitText);
     parentElement.appendChild(p);
 
-    if (myApp["_id"] === undefined) {
+    if (myState["myApp"]["_id"] === -1) {
         createShareStaging(data, parentElement);
-    } else if (myApp["isMyApp"]) {
+    } else if (myState["myApp"]["isMyApp"]) {
         const myObj = {
-            _id: myApp["_id"],
-            appName: myApp["appName"],
-            appDesc: myApp["appDesc"],
+            _id: myState["myApp"]["_id"],
+            appName: myState["myApp"]["appName"],
+            appDesc: myState["myApp"]["appDesc"],
             appSummary: data["summary"],
         };
 

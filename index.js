@@ -25,7 +25,7 @@ class StackBuilderServer {
         this.app.use(logger('dev'));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
-        this.app.use('/client', express.static('client'));
+        this.app.use('/', express.static('client'));
         this.app.use(cookieParser());
         this.app.use((req, res, next) => {
             if (!req.cookies.uniqueid) {
@@ -46,10 +46,6 @@ class StackBuilderServer {
 
     async initRoutes() {
         const self = this;
-
-        this.app.get('/', (req, res) => {
-            res.send('<h1>Hello, check out: /client/ </h1>');
-        });
 
         this.app.get('/uniqueid', (req, res) => {
             res.send(`All cookies: ${JSON.stringify(req.cookies)}\nYour unique ID: ${req.cookies.uniqueid}`);
