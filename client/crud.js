@@ -1,47 +1,95 @@
 export async function buildApp(appName, appDescription) {
-    const response = await fetch(`/build/${appName}/${appDescription}`);
-    return await response.json();
+    try {
+        const response = await fetch(`/build/${appName}/${appDescription}`);
+        if (!response.ok) {
+            throw new Error('Failed to build the app.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in buildApp:', error);
+        throw error;
+    }
 }
 
 export async function shareApp(body) {
-    const response = await fetch("/create", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    });
-    return await response.json();
+    try {
+        const response = await fetch("/create", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to share the app.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in shareApp:', error);
+        throw error;
+    }
 }
 
 export async function getAppById(id) {
-    const response = await fetch(`/read/${id}`, {
-        method: 'GET',
-    });
-    return await response.json();
+    try {
+        const response = await fetch(`/read/${id}`, {
+            method: 'GET',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to get the app by ID.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in getAppById:', error);
+        throw error;
+    }
 }
 
 export async function updateApp(body) {
-    const response = await fetch("/update", {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    });
-    return await response.json();
+    try {
+        const response = await fetch("/update", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update the app.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in updateApp:', error);
+        throw error;
+    }
 }
 
 export async function deleteAppById(id) {
-    const response = await fetch(`/delete/${id}`, {
-        method: 'DELETE',
-    });
-    return await response.json();
+    try {
+        const response = await fetch(`/delete/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete the app.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in deleteAppById:', error);
+        throw error;
+    }
 }
 
 export async function readAllApps() {
-    const response = await fetch("/read/all", {
-        method: 'GET',
-    });
-    return response.json();
+    try {
+        const response = await fetch("/read/all", {
+            method: 'GET',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to read all apps.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in readAllApps:', error);
+        throw error;
+    }
 }

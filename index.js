@@ -39,9 +39,14 @@ class StackBuilderServer {
             console.log(`Server is running on http://localhost:${port}`);
             console.log(`Client on http://localhost:${port}/client/`);
         });
-        Logger.info("Server start-up");
-        await this.initDB();
-        await this.initRoutes();
+        try {
+            Logger.info("Server start-up");
+            await this.initDB();
+            await this.initRoutes();
+        } catch (error) {
+            console.log('An error occurred on server start up');
+            console.log(error);
+        }
     }
 
     async initRoutes() {
@@ -102,4 +107,7 @@ class StackBuilderServer {
 
 Logger.info(process.env.DB_URL);
 const server = new StackBuilderServer(process.env.DB_URL);
-await server.start();
+server.start().catch(e => {
+    console.log('Server will not start.');
+    console.log(e);
+});

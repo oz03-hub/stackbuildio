@@ -1,2 +1,5 @@
 node_modules/
 .env
+client/client-draft.js
+client/client-draft2.js
+client/crud-draft.js

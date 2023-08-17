@@ -8,15 +8,6 @@ const toolsContainer = document.getElementById("toolsContainer");
 const loadField = document.getElementById("loader");
 const appsContainer = document.getElementById("appsContainer");
 
-// Data
-// let userTools = null;
-// let allApps = null;
-// let myApp = {
-//     appName: "",
-//     appDesc: "",
-//     isMyApp: true,
-// };
-
 let myState = undefined;
 
 // Event Listeners
@@ -24,13 +15,14 @@ resetButton.addEventListener('click', handleResetButtonClick);
 submitButton.addEventListener('click', handleSubmitButtonClick);
 
 // Functions
+function errorAlert() {
+    alert('Something went wrong, check console.');
+}
+
 async function render() {
     loadLocalStorageData();
-
     appNameField.value = myState["myApp"]["appName"];
     appDescField.value = myState["myApp"]["appDesc"];
-
-    // renderUserTools();
     await renderAllApps();
 }
 
@@ -50,18 +42,17 @@ function loadLocalStorageData() {
         allApps: null
     };
 
-    console.log(JSON.stringify(myState));
+//    console.log(JSON.stringify(myState));
 }
 
-// function renderUserTools() {
-//     if (myState && myState["tools"] !== null) {
-//         renderToolContainer(myState["tools"], toolsContainer);
-//     }
-// }
-
 async function renderAllApps() {
-    myState["allApps"] = await crud.readAllApps();
-    renderAppsListing(myState["allApps"]);
+    try {
+        myState["allApps"] = await crud.readAllApps();
+        renderAppsListing(myState["allApps"]);
+    } catch (error) {
+        console.log('An error happened in readAllApps invoke.');
+        errorAlert();
+    }
 }
 
 function renderAppsListing(apps) {
@@ -71,7 +62,7 @@ function renderAppsListing(apps) {
         const appItem = createAppListItem(app);
         appListing.appendChild(appItem);
     }
-    appsContainer.appendChild(appListing);
+    appsContainer.appendChild(appListing);    
 }
 
 function createAppListItem(app) {
@@ -110,7 +101,12 @@ function createDeleteButton(appId) {
     deleteButton.textContent = 'Delete';
 
     deleteButton.addEventListener('click', async () => {
-        await handleDeleteButtonClick(appId);
+        try {
+            await handleDeleteButtonClick(appId);
+        } catch (error) {
+            console.log('An error happened while deleting.');
+            errorAlert();
+        }
     });
 
     return deleteButton;
@@ -134,7 +130,12 @@ async function handleAppItemClick(app) {
 }
 
 async function handleDeleteButtonClick(appId) {
-    await crud.deleteAppById(appId);
+    try {
+        await crud.deleteAppById(appId);
+    } catch (error) {
+        console.log('An error occurred while deleting app.');
+        errorAlert();
+    }
     await render();
 }
 
@@ -165,14 +166,21 @@ async function handleSubmitButtonClick() {
     localStorage.setItem('myState', JSON.stringify(myState));
 
     loadField.textContent = "Loading...";
-    const data = await crud.buildApp(name, desc);
-    if (!data["error"]) {
-        localStorage.setItem('userTools', JSON.stringify(data));
-        renderToolContainer(data, toolsContainer);
-    } else {
+    try {
+        const data = await crud.buildApp(name, desc);
+        if (!data["error"]) {
+            localStorage.setItem('userTools', JSON.stringify(data));
+            renderToolContainer(data, toolsContainer);
+        } else {
+            loadField.textContent = "Your suggestions will show up here...";
+            alert("AI module rejected your request. This can happen because you have not described your application well enough or you are asking for a different task that is not supported by the AI module.");
+            return;
+        }
+    } catch (error) {
         loadField.textContent = "Your suggestions will show up here...";
-        alert("AI module rejected your request. This can happen because you have not described your application well enough or you are asking for a different task that is not supported by the AI module.");
-        return;
+        console.log('An error happened on access to AI module.');
+        console.log(error);
+        errorAlert();
     }
 }
 
@@ -223,7 +231,14 @@ function createShareStaging(data, parentElement) {
             appSummary: data["summary"],
             appAuthor: author
         };
-        await crud.shareApp(body);
+    
+        try {
+            await crud.shareApp(body);
+        } catch (error) {
+            console.log('An error happened while sharing app.');
+            console.log(error);
+            errorAlert();
+        }
         await render();
     });
 
@@ -243,7 +258,13 @@ function createUpdateStaging(data, parentElement) {
     updateButton.textContent = "Update!";
     updateButton.style.backgroundColor = "cornflowerblue";
     updateButton.addEventListener('click', async (e) => {
-        const res = await crud.updateApp(data);
+        try {
+            const res = await crud.updateApp(data);
+        } catch (error) {
+            console.log('An error happened on updating app.');
+            console.log(error);
+            errorAlert();
+        }
         await render();
     });
     const disclaimer = document.createElement('p');

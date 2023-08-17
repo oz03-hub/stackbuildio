@@ -9,6 +9,7 @@ export class StacksDatabase {
     }
 
     async connect() {
+        try {
         this.client = await MongoClient.connect(this.dburl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -20,6 +21,10 @@ export class StacksDatabase {
         Logger.info("Connected to db stacks");
 
         await this.init();
+        } catch (error) {
+            console.log('An error occurred on connecting to DB.');
+            console.log(error);
+        } 
     }
 
     async init() {
