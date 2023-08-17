@@ -1,7 +1,7 @@
 ### Your created .env should be like this ###
 
 OPENAI_API_KEY='sk-YOURKEY'
-MONGO_DB_PASSWORD='ICscc5SekfjPO9ef'
-DB_URL="mongodb+srv://oyilmazel:ICscc5SekfjPO9ef@stacks.2dklfwa.mongodb.net/?retryWrites=true&w=majority"
+MONGO_DB_PASSWORD='blablalba'
+DB_URL="mongodb+srv://blablablaa.mongodb.net/?retryWrites=true&w=majority"
 
-### mongodb password and url are default and can be used on your local run, you will connect to my db, if you want to start fresh you will need to host your own. ###
+### You need to obtain all keys and db yourself ###
