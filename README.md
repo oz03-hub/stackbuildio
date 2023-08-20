@@ -33,3 +33,5 @@ At stackbuildio, we value your trust and are committed to transparency. Here's h
 We continuously strive to enhance your experience with stackbuildio. If you encounter any issues, have suggestions for improvements, or need assistance, please don't hesitate to reach out to our support team at ozel@yilmazel.com.
 
 Thank you for choosing stackbuildio for your full-stack application planning needs. Let's build amazing applications together! 🎉🚀
+
+See docs/usage.md for more details on usage and architecture of the project.
