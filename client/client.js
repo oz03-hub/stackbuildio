@@ -46,13 +46,8 @@ function loadLocalStorageData() {
 }
 
 async function renderAllApps() {
-    try {
-        myState["allApps"] = await crud.readAllApps();
-        renderAppsListing(myState["allApps"]);
-    } catch (error) {
-        console.log('An error happened in readAllApps invoke.');
-        errorAlert();
-    }
+    myState["allApps"] = await crud.readAllApps();
+    renderAppsListing(myState["allApps"]);    
 }
 
 function renderAppsListing(apps) {
